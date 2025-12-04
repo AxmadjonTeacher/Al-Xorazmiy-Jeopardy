@@ -114,42 +114,43 @@ const App: React.FC = () => {
               </React.Fragment>
             ))}
           </div>
-        </main>
+        </div>
+      </main>
 
-        {/* Footer Area: Scoreboard and Logos */}
-        <footer className="shrink-0 w-full max-w-[1920px] mx-auto px-4 pb-2">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-8">
-            {/* Left Logo - Hidden on mobile, visible on large screens */}
-            <div className="hidden lg:block">
-               <Logo />
-            </div>
-
-            {/* Scoreboard - Centered */}
-            <div className="flex-1 w-full max-w-4xl">
-               <ScoreBoard 
-                 teams={teams} 
-                 onUpdateScore={handleScoreUpdate}
-                 onUpdateName={handleUpdateName}
-                 onAddTeam={handleAddTeam}
-                 onRemoveTeam={handleRemoveTeam}
-               />
-            </div>
-
-            {/* Right Logo - Hidden on mobile, visible on large screens */}
-            <div className="hidden lg:block">
-               <Logo />
-            </div>
-
-            {/* Mobile Logo (shown below scoreboard on small screens) */}
-            <div className="lg:hidden transform scale-75">
-               <Logo />
-            </div>
+      {/* Footer Area: Scoreboard and Logos */}
+      <footer className="shrink-0 w-full max-w-[1920px] mx-auto px-4 pb-2">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-8">
+          {/* Left Logo - Hidden on mobile, visible on large screens */}
+          <div className="hidden lg:block">
+              <Logo />
           </div>
-          
-          <div className="text-center text-slate-400 text-[10px] mt-1">
-            <p>© {new Date().getFullYear()} Al-Xorazmiy School. English Grammar Game.</p>
+
+          {/* Scoreboard - Centered */}
+          <div className="flex-1 w-full max-w-4xl">
+              <ScoreBoard 
+                teams={teams} 
+                onUpdateScore={handleScoreUpdate}
+                onUpdateName={handleUpdateName}
+                onAddTeam={handleAddTeam}
+                onRemoveTeam={handleRemoveTeam}
+              />
           </div>
-        </footer>
+
+          {/* Right Logo - Hidden on mobile, visible on large screens */}
+          <div className="hidden lg:block">
+              <Logo />
+          </div>
+
+          {/* Mobile Logo (shown below scoreboard on small screens) */}
+          <div className="lg:hidden transform scale-75">
+              <Logo />
+          </div>
+        </div>
+        
+        <div className="text-center text-slate-400 text-[10px] mt-1">
+          <p>© {new Date().getFullYear()} Al-Xorazmiy School. English Grammar Game.</p>
+        </div>
+      </footer>
 
       {/* Modals */}
       {activeQuestion && (
