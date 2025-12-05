@@ -136,22 +136,26 @@ const App: React.FC = () => {
     setView('DASHBOARD');
   };
 
-  const handleLogin = async () => {
+  const handleAuth = async (type: 'LOGIN' | 'SIGNUP', email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: window.location.origin, // Redirects back to this page
-        },
-      });
-      if (error) throw error;
-    } catch (error: any) {
-      console.error('Login error:', error);
-      if (error.message?.includes('provider is not enabled')) {
-        alert("Google Login is not enabled in this Supabase project yet. Please use Guest mode or enable the provider in Supabase Dashboard.");
+      if (type === 'SIGNUP') {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+        });
+        if (error) throw error;
+        // Supabase auto-signs in after signup unless email confirmation is enabled and required
+        alert("Account created! You are now signed in.");
       } else {
-        alert("Login failed: " + error.message);
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) throw error;
       }
+    } catch (error: any) {
+      console.error('Auth error:', error);
+      alert(error.message || "Authentication failed");
     }
   };
 
@@ -161,7 +165,6 @@ const App: React.FC = () => {
       console.error("Logout error:", error);
     }
     // Clear quizzes to force re-fetch or reset to local
-    // This helps visually confirm logout
     setQuizzes([SAMPLE_QUIZ]);
     setView('DASHBOARD');
   };
@@ -186,7 +189,7 @@ const App: React.FC = () => {
       onCreateQuiz={handleCreateQuiz}
       isLoggedIn={!!user}
       userEmail={user?.email}
-      onLogin={handleLogin}
+      onAuth={handleAuth}
       onLogout={handleLogout}
     />
   );

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Plus, Play, LogOut } from 'lucide-react';
+import React, { useState } from 'react';
+import { Plus, Play, LogOut, Mail, Lock, X, ArrowRight } from 'lucide-react';
 import { Quiz } from '../types';
 import { Logo } from './Logo';
 
@@ -9,7 +9,7 @@ interface DashboardProps {
   onCreateQuiz: () => void;
   isLoggedIn: boolean;
   userEmail?: string;
-  onLogin: () => void;
+  onAuth: (type: 'LOGIN' | 'SIGNUP', email: string, password: string) => Promise<void>;
   onLogout: () => void;
 }
 
@@ -19,9 +19,28 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onCreateQuiz,
   isLoggedIn,
   userEmail,
-  onLogin,
+  onAuth,
   onLogout
 }) => {
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password) return;
+    
+    setIsLoading(true);
+    await onAuth(isSignUp ? 'SIGNUP' : 'LOGIN', email, password);
+    setIsLoading(false);
+    setShowAuthModal(false);
+    // Reset fields
+    setEmail('');
+    setPassword('');
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
       {/* Header */}
@@ -52,29 +71,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
             </div>
           ) : (
             <button 
-              onClick={onLogin}
-              className="flex items-center gap-3 px-5 py-2.5 rounded-full bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all shadow-sm group"
+              onClick={() => setShowAuthModal(true)}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-slate-800 text-white hover:bg-slate-900 transition-all shadow-sm hover:shadow-md font-bold text-sm"
             >
-              {/* Google G Icon */}
-              <svg className="w-4 h-4" viewBox="0 0 24 24">
-                <path
-                  fill="#4285F4"
-                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                />
-                <path
-                  fill="#34A853"
-                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                />
-                <path
-                  fill="#FBBC05"
-                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.26.81-.58z"
-                />
-                <path
-                  fill="#EA4335"
-                  d="M12 4.63c1.61 0 3.06.56 4.21 1.64l3.16-3.16C17.45 1.14 14.97 0 12 0 7.7 0 3.99 2.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                />
-              </svg>
-              <span className="text-sm font-bold group-hover:text-slate-900">Sign in with Google</span>
+              <Mail size={16} />
+              <span>Sign In with Email</span>
             </button>
           )}
         </div>
@@ -145,6 +146,82 @@ export const Dashboard: React.FC<DashboardProps> = ({
       <div className="py-6 text-center">
         <Logo className="scale-75 opacity-70" />
       </div>
+
+      {/* Auth Modal */}
+      {showAuthModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden relative border border-slate-100">
+            <button 
+              onClick={() => setShowAuthModal(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1"
+            >
+              <X size={20} />
+            </button>
+            
+            <div className="p-8">
+              <div className="text-center mb-6">
+                <h3 className="text-2xl font-bold text-slate-900">
+                  {isSignUp ? 'Create Account' : 'Welcome Back'}
+                </h3>
+                <p className="text-slate-500 text-sm mt-1">
+                  {isSignUp ? 'Sign up to save your quizzes to the cloud' : 'Sign in to access your quizzes'}
+                </p>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1 ml-1">Email</label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                    <input 
+                      type="email" 
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 bg-slate-700 border border-transparent rounded-lg text-teal-300 placeholder:text-slate-500 focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all font-medium"
+                      placeholder="teacher@school.com"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1 ml-1">Password</label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                    <input 
+                      type="password" 
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 bg-slate-700 border border-transparent rounded-lg text-teal-300 placeholder:text-slate-500 focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all font-bold tracking-widest"
+                      placeholder="••••••••"
+                      minLength={6}
+                    />
+                  </div>
+                </div>
+
+                <button 
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full bg-slate-900 text-white py-3 rounded-lg font-bold hover:bg-black transition-colors flex items-center justify-center gap-2 mt-4 shadow-lg shadow-slate-200/50"
+                >
+                  {isLoading ? 'Processing...' : (isSignUp ? 'Sign Up' : 'Sign In')}
+                  {!isLoading && <ArrowRight size={18} />}
+                </button>
+              </form>
+
+              <div className="mt-6 text-center pt-4 border-t border-slate-100">
+                <button 
+                  onClick={() => setIsSignUp(!isSignUp)}
+                  className="text-sm text-teal-600 hover:text-teal-800 font-medium transition-colors"
+                >
+                  {isSignUp ? 'Already have an account? Sign In' : 'Need an account? Sign Up'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
