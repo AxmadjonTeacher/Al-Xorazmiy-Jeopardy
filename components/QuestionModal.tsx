@@ -10,15 +10,13 @@ interface QuestionModalProps {
   onComplete: () => void;
 }
 
-const getTimerDuration = (points: number) => {
-  switch (points) {
-    case 100: return 30;
-    case 200: return 45;
-    case 300: return 50;
-    case 400: return 55;
-    case 500: return 60;
-    default: return 30;
-  }
+const getTimerDuration = (points: number | string) => {
+  const p = typeof points === 'string' ? parseInt(points) || 100 : points;
+  if (p < 200) return 30;
+  if (p < 300) return 45;
+  if (p < 400) return 50;
+  if (p < 500) return 55;
+  return 60;
 };
 
 export const QuestionModal: React.FC<QuestionModalProps> = ({ 
@@ -30,7 +28,6 @@ export const QuestionModal: React.FC<QuestionModalProps> = ({
 }) => {
   const [isRevealed, setIsRevealed] = useState(false);
   // Initialize with a safe default (e.g. 30) to prevent "Time Up" triggering immediately on mount
-  // because the effect that sets the real time runs after the first render.
   const [timeLeft, setTimeLeft] = useState(30);
   const [isTimeUp, setIsTimeUp] = useState(false);
 
@@ -39,7 +36,10 @@ export const QuestionModal: React.FC<QuestionModalProps> = ({
     if (isOpen && questionData) {
       setIsRevealed(false);
       setIsTimeUp(false);
-      setTimeLeft(getTimerDuration(questionData.points));
+      
+      // Use custom timer if available, otherwise calculate based on points
+      const initialTime = questionData.timerDuration || getTimerDuration(questionData.points);
+      setTimeLeft(initialTime);
     }
   }, [isOpen, questionData]);
 
@@ -62,15 +62,12 @@ export const QuestionModal: React.FC<QuestionModalProps> = ({
   if (!isOpen || !questionData) return null;
 
   const handleClose = () => {
-    // Only mark as complete if the answer was revealed.
-    // If closed before revealing, it remains available.
     if (isRevealed) {
       onComplete();
     }
     onClose();
   };
 
-  // Styles based on timer state
   const borderColor = isTimeUp && !isRevealed ? 'border-red-500' : 'border-slate-800';
   const headerBg = isTimeUp && !isRevealed ? 'bg-red-50' : 'bg-slate-100';
   const timerColor = isTimeUp ? 'text-red-600' : (timeLeft <= 10 ? 'text-orange-500' : 'text-slate-500');
@@ -122,7 +119,7 @@ export const QuestionModal: React.FC<QuestionModalProps> = ({
             </p>
           )}
 
-          {/* Answer Section (Hidden/Revealed) */}
+          {/* Answer Section */}
           <div className="w-full mt-4">
              {isRevealed ? (
                <div className="animate-in slide-in-from-bottom-4 fade-in duration-500">
