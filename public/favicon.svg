@@ -1,0 +1,19 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- White Background -->
+  <rect width="512" height="512" fill="white"/>
+  
+  <!-- Pixelated Controller Outline (Purple) -->
+  <path d="M80 160 h352 v100 h-60 v60 h-232 v-60 h-60 z" fill="#D500F9"/>
+  <!-- Shadow/Depth -->
+  <path d="M80 260 h60 v60 h232 v-60 h60 v20 h-60 v60 h-232 v-60 h-60 z" fill="#AA00FF"/>
+
+  <!-- Buttons (Cyan) -->
+  <rect x="340" y="200" width="40" height="40" fill="#00E5FF"/>
+  <rect x="290" y="220" width="40" height="40" fill="#00E5FF"/>
+  
+  <!-- D-Pad (Black/Dark) -->
+  <rect x="130" y="210" width="20" height="60" fill="#4A148C"/>
+  <rect x="110" y="230" width="60" height="20" fill="#4A148C"/>
+  
+  <!-- 'A' in pixel font on screen? Or just the controller is the icon. The prompt said "Controller... or pixelated E". This controller is good. -->
+</svg>
